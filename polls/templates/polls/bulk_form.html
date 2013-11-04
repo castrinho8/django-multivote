@@ -1,0 +1,26 @@
+{%extends "site_base.html" %}
+{% block title %}Orla UDC: Formulario de subida de opcións en bruto{% endblock %}
+{% block content %}
+
+<form action="{% url "polls:bulk_upload" poll_id %}" method="POST">
+{% csrf_token %}
+
+<label>
+	Insire aquí os nomes das opcións.
+<textarea name="data">
+
+</textarea>
+</label>
+
+<label>Separador entre opcións:
+	<input type="text" class="input-small" name="sep" value=";" />
+</label>
+
+<input type="submit" name="submit" value="Insertar" />
+
+<!--
+<input type="submit" name="del" value="Eliminar existentes" />
+-->
+</form>
+
+{% endblock %}

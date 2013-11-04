@@ -1,0 +1,10 @@
+{% extends "site_base.html" %}
+{%block content %}
+<h1>Benvido</h1>
+<p>
+Benvido ao sistema de votación de profesores para a Orla de 5º de Enxeñería Informática da UDC.
+</p>
+
+<a href="{% url "polls:index" %}">Pulsa aquí para ver as votacións en curso.</a>
+
+{% endblock %}

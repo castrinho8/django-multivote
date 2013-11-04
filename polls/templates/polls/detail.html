@@ -1,0 +1,267 @@
+{%extends "site_base.html" %}
+{% block title %}Orla UDC: Detalle de votación{% endblock %}
+{% block style %}
+
+.sortable {
+	min-height: 0px;
+	border: 1px dotted black;
+	padding: 40px;
+	margin:0
+}
+
+{% endblock %}
+{% block content %}
+
+<h1>{{ poll.question }}</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<div class="messages">
+{% for message in messages %}
+<div{% if message.tags %} class="alert alert-{{ message.tags }}" {% endif %}>
+<button type="button" class="close" data-dismiss="alert">&times;</button>
+{{ message }}</li>
+</div>
+{% endfor %}
+</div>
+
+<p>
+Teranse en conta as 10 primeiras eleccións. Quedan <span class="remaining_votes"></span>.</p>
+
+<noscript>Aviso, necesítase JavaScript para que funcione correctamente esta encuesta.</noscript>
+
+<div id="choices">
+<form action="{% url 'polls:vote' poll.id %}" method="post">
+{% csrf_token %}
+
+<ul id="sortable" class="sortable">
+</ul>
+
+<input type="submit" value="Vote" />
+</form>
+
+<ul id="sortable_notform" class="sortable">
+</ul>
+</div>
+
+
+<form id="addToListForm" action="{% url 'polls:add_choice' poll.id %}" method="post">
+{% csrf_token %}
+
+<fieldset>
+	<p>Falta algunha opción aquí?</p>
+
+	<div class="input-append" style="display:inline">
+		<input type="text" id="choice_plus_text" placeholder="Vacío" value="" />
+		<button id="addToListBtn" class="btn" type="button">Engadir á lista</button>
+	</div>
+</fieldset>
+
+</form>
+
+
+<script type="text/javascript">
+
+var choices = {
+	{% for choice in poll.choice_set.all %}
+	{{ choice.id }} : "{{ choice.choice_text|force_escape|escapejs }}",
+	{% endfor %}
+	"": ""
+}
+
+var user_votes = new Array(10);
+var user_votes_len = 0
+
+{% if user_votes %}
+	$(function() {
+		{% for vote in user_votes %}
+		user_votes[{{ vote.number }}] = {{ vote.choice.id }};{% endfor %}
+	})
+{% endif %}
+
+
+function draw_choice(id, name, vote) {
+	var obj;
+	if(!vote) {
+		for(var i = 0; i < user_votes.length; i++) {
+			if(user_votes[i] == id) {
+				vote = i;
+				break;
+			}
+		}
+	}
+	if(vote > 0 && user_votes_len < 10) {
+		obj = $('#sortable')
+		user_votes[vote] = id
+	} else {
+		obj = $('#sortable_notform')
+		// console.log("Vote for ", name, " is ", vote)
+	}
+
+	var li = document.createElement('li')
+	var label = document.createElement('label')
+	var inpt = document.createElement('input')
+	inpt.type = "text"
+	$(inpt).attr('placeholder', '1..10')
+	$(inpt).val(vote || 0)
+	$(inpt).attr('data-value', vote || 0)
+	inpt.id = "choice_" + id
+	inpt.name ="choice_" + id
+	inpt.className = "input-mini"
+
+	label.appendChild(inpt)
+	label.innerHTML += " " + name
+
+	li.appendChild(label)
+
+	obj.append(li)
+
+	attach_on_change(id)
+
+	if(user_votes < 10) {
+		user_votes_len++;
+		sort_list(obj)
+	}
+}
+
+function drawswap_choice(id, newname) {
+	var obj = $('input[type=text]').filter(function(idx, dom) {
+		return dom.id == "choice_" + id
+	})
+	var parent = obj.parent()
+	parent.html("")
+	parent.append(obj)
+	parent.append(" ")
+	parent.append(newname)
+}
+
+$(function() {
+	for(var i in choices) {
+		if(i)
+			draw_choice(i, choices[i])
+	}
+})
+
+
+function sort_list(list) {
+	var lis = $(list.children().get().reverse())
+	// console.log(lis)
+	var first_idx = lis.length - 11
+
+	lis.each(function(idx, dom) {
+		// console.log(first_idx, lis.length, idx)
+		var i = idx - first_idx
+		$(dom).find('input[type=text]').val((i >= 0 ? i : 0))
+		$(dom).find('input[type=text]').attr('data-value', i)
+	})
+
+	$('.remaining_votes').html(10 - lis.length)
+
+}
+
+function sort_dom_list(evt) {
+	var mylist = $('#sortable')
+	var lis = mylist.children('li').get()
+
+	lis.sort(function(a, b) {
+		var $a = $(a).find('input[type=text]')
+		var $b = $(b).find('input[type=text]')
+
+		var a_val, b_val;
+
+		a_val = ($a.val() < $a.attr('data-value')) ? $a.val() - 1 : $a.val() + 1
+		b_val = ($b.val() < $b.attr('data-value')) ? $b.val() - 1 : $b.val() + 1
+
+		a_val = parseInt($a.val())
+		b_val = parseInt($b.val())
+
+		if(a_val == b_val) {
+			if(a_val > $a.attr('data-value') || b_val > $b.attr('data-value'))
+				return -1
+			else
+				return 1
+		}
+
+		return (a_val < b_val) ? -1 : 1
+	})
+
+	lis.reverse()
+
+	$.each(lis, function(idx, item) {
+		mylist.append(item)
+	})
+
+	sort_list(mylist)
+}
+
+function visual_warn(message)
+{
+    $('.messages').append('<div id="alertdiv" class="alert alert-warning"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+
+    setTimeout(function() { // this will automatically close the alert and remove this if the users doesnt close it in 5 secs
+      $("#alertdiv").remove();
+
+    }, 5000);
+}
+
+
+	$(function() {
+		$( "#sortable" ).sortable({
+			stop: function(evt, ui) {
+						sort_list($("#sortable"));
+					},
+			cancel: '.ui-state-disabled',
+			connectWith: '.sortable',
+			distance: 15,
+			placeholder: "ui-state-highlight"
+		});
+		// $( "#sortable" ).disableSelection();
+		$( "#sortable_notform" ).sortable({
+			stop: function(evt, ui) {
+					sort_list($("#sortable"));
+				},
+			cancel: '.ui-state-disabled',
+			connectWith: '.sortable',
+			distance: 15,
+			placeholder: "ui-state-highlight"
+		})
+
+		$( ".score_input" ).change(sort_dom_list)
+
+		sort_list($("#sortable"))
+	});
+
+	$( "#addToListBtn" ).click(function() {
+		var text = $('#choice_plus_text').val()
+		// console.log('hello', text)
+		Dajaxice.polls.add_choice(Dajax.process, {"poll_id": {{ poll.id }}, "text": text})
+	})
+
+	$( "#addToListForm" ).submit(function() {
+		// console.log('hello', text)
+		var text = $('#choice_plus_text').val()
+		Dajaxice.polls.add_choice(Dajax.process, {"poll_id": {{ poll.id }}, "text": text})
+	})
+
+	function attach_on_change(choice_id) {
+		$('#choice_' + choice_id).change(sort_dom_list)
+		sort_list($('#sortable'))
+	}
+
+	function add_ajax_error(text) {
+		var d = document.createElement('div')
+		var btn = document.createElement('button')
+		d.className = 'alert alert-warning'
+		btn.type = 'button'
+		btn.className = 'close'
+		$(btn).attr('data-dismiss', 'alert')
+		btn.innerHTML = '&times;'
+		d.appendChild(btn)
+		d.innerHTML += text
+
+		$('.messages')[0].appendChild(d)
+	}
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "site_base.html" %}
+{% block content %}
+
+<div style="max-width: 70%">
+<p>
+	Esta aplicación web permite iniciar sesión mediante tickets dun servidor <abbrev title="Central Authentication Service">CAS</abbrev>.
+</p>
+
+<p>
+	Deste xeito esta aplicación <strong>non terá acceso</strong> ao teu contrasinal, e ao mesmo tempo poderase validar que és un membro da comunidade coa que queres participar.
+</p>
+
+<form>
+{% load add_get_parameter %}
+<a href="{% url "cas-redirect" %}{% add_get %}">
+	<img src="/logo-udc.png" alt="Universidade da Coruña" title="Universidade da Coruña" />
+</a>
+</form>
+
+</div>
+
+{% endblock %}

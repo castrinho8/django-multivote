@@ -1,0 +1,29 @@
+{%extends "site_base.html" %}
+{% block title %}Orla UDC: Lista de Votacións{% endblock %}
+{% block content %}
+
+{% if latest_poll_list %}
+	<ul>
+	{% for poll in latest_poll_list %}
+		<li>
+			<a href="{% url "polls:detail" poll.id %}">
+				{{ poll.question }}
+			</a>
+
+			{% if perms.polls.poll_results %}
+			--
+			<a href="{% url "polls:results" poll.id %}">
+				(Ver resultados)
+			</a>
+			{% endif %}
+		</li>
+	{% endfor %}
+	</ul>
+
+{% else %}
+
+<p>Non hai encuestas activas neste momento.</p>
+
+{% endif %}
+
+{% endblock %}
