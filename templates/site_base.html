@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+{% load dajaxice_templatetags %}
+<html>
+<head>
+{% load static from staticfiles %}
+<title>{% block title %}Orla UDC para Ingeniería Informática{% endblock %}</title>
+<meta charset="utf-8" />
+<meta http-equiv="Author" content="Santiago Saavedra" />
+<link rel="stylesheet" href="{% static "css/bootstrap.css" %}" />
+<link rel="stylesheet" href="{% static "css/main.css" %}" />
+<script type="text/javascript" src="{% static "js/jquery-1.9.1.js" %}"></script>
+<script type="text/javascript" src="{% static "js/jquery-ui-1.10.3.min.js" %}"></script>
+<script type="text/javascript" src="{% static "js/bootstrap.js" %}"></script>
+<script type="text/javascript" src="{% static "/static/dajax/jquery.dajax.core.js" %}"></script>
+    {% dajaxice_js_import %}
+
+<script type="text/javascript">
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+function sameOrigin(url) {
+    // test that a given url is a same-origin URL
+    // url could be relative or scheme relative or absolute
+    var host = document.location.host; // host + port
+    var protocol = document.location.protocol;
+    var sr_origin = '//' + host;
+    var origin = protocol + sr_origin;
+    // Allow absolute or scheme relative URLs to same origin
+    return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+        (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+        // or any other URL that isn't scheme relative or absolute i.e relative.
+        !(/^(\/\/|http:|https:).*/.test(url));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+            // Send the token to same-origin, relative URLs only.
+            // Send the token only if the method warrants CSRF protection
+            // Using the CSRFToken value acquired earlier
+            xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+        }
+    }
+});
+</script>
+
+<style type="text/css">
+{% block style %}
+{% endblock %}
+</style>
+
+</head>
+<body>
+
+
+<div id="login_bar">
+{% if user.is_authenticated %}
+User: {{ user.login }} | <a href="{% url "cas-logout" %}">Logout</a>
+{% else %}
+You are anonymous. <a href="{% url "accounts_login" %}">Login</a>
+{% endif %}
+</div>
+
+<div id="content">
+{% block content %}{% endblock %}
+</div>
+</body>
+</html>

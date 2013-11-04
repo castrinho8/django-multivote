@@ -1,0 +1,18 @@
+
+body {
+	margin-top: 0.5em;
+	margin-right: 1em;
+	margin-left: 1.2em;
+	background-color: #FFF;
+}
+
+#login_bar {
+	float:right;
+}
+
+li.ui-state-disabled {
+	display: inline;
+	list-style-type: none;
+
+	font-size: 1.5em;
+}

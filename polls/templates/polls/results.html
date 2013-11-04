@@ -1,0 +1,14 @@
+{% extends "site_base.html" %}
+{% block title %}Resultados da votación da Orla{% endblock %}
+{% block content %}
+<h1>{{ poll.question }}</h1>
+
+<ul>
+{% for vote in poll.get_votes.all %}
+    <li>
+    	<span style="min-width: 20em; display:inline-block">{{ vote.choice__choice_text }}:</span> <strong>{{ vote.number__sum }} puntos</strong></li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'polls:detail' poll.id %}">Vote again?</a>
+{% endblock %}
