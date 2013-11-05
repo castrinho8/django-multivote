@@ -142,10 +142,10 @@ class CasBackend(object):
         last_name = data['last_name']
 
         user = CasUser.objects.get_or_create(login=login, defaults={
-            first_name=first_name,
-            last_name=last_name,
-            last_token=ticket,
-            rawdata=raw_data})
+            'first_name':first_name,
+            'last_name':last_name,
+            'last_token':ticket,
+            'rawdata':raw_data})
 
         user.last_token = ticket
         user.save()
