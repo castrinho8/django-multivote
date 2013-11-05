@@ -8,6 +8,7 @@ from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 dajaxice_autodiscover()
 
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 
 from django.contrib.auth.views import login
@@ -20,7 +21,7 @@ urlpatterns = patterns('',
     # url(r'^$', 'orlaudc.views.home', name='home'),
     # url(r'^orlaudc/', include('orlaudc.foo.urls')),
 
-    url (r'^$', TemplateView.as_view(template_name="home.html"),
+    url (r'^$', csrf_exempt(TemplateView.as_view(template_name="home.html")),
             name='home'),
 
     url(r'^polls/', include('polls.urls', namespace="polls")),
@@ -39,6 +40,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
-    
+
 )
 urlpatterns += staticfiles_urlpatterns()

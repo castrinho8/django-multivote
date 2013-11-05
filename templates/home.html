@@ -7,4 +7,50 @@ Benvido ao sistema de votación de profesores para a Orla de 5º de Enxeñería 
 
 <a href="{% url "polls:index" %}">Pulsa aquí para ver as votacións en curso.</a>
 
+{% if not user.is_authenticated %}
+<div id="cookielaw">
+	<h2>Requsito de satisfacción coa Lei de Cookies Europea</h2>
+
+	<p>
+		Segundo a nova (estúpida) directiva europea de cookies, é preciso que
+		antes de poñer cookies non esenciales para o uso do servizo se informe
+		e pregunte sobre dito emplazamento de cookies.
+	</p>
+
+	<p>
+		En calquera caso, estas cookies configuradas por terceiras partes poden ser deshabilitadas polo seu navegador mediante as opcións de cookies, preferindo non aceptar cookies de terceiros.
+	</p>
+
+	<p>
+		Permite que este sitio web empregue cookies non esenciais?
+	</p>
+
+	<!-- As cookies csrftoken e sessionid son consideradas esenciais para poder prestar o servizo deste sitio web -->
+</div>
+
+<script type="text/javascript">
+$(function() {
+	$( "#cookielaw" ).dialog({
+		height: 440,
+		width: 400,
+		modal: true,
+		buttons: {
+			Si: function() {
+				$( this ).dialog( "close" );
+			},
+			Non: function() {
+				$( this ).dialog( "close" );
+				var objs = document.getElementsByTagName('a')
+				$( objs ).each(function(idx, dom) {
+					dom.href = "#"
+					dom.className += " disabled"
+				})
+			}
+		}
+	})
+})
+</script>
+{% endif %}
+
 {% endblock %}
+{% block ananlytics %}<!-- Analytics removed on main page for EU-cookie policy compliancy -->{% endblock %}
