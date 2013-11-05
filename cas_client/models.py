@@ -141,7 +141,7 @@ class CasBackend(object):
         first_name = data['first_name']
         last_name = data['last_name']
 
-        user = CasUser.objects.get_or_create(login=login, defaults={
+        user, created = CasUser.objects.get_or_create(login=login, defaults={
             'first_name':first_name,
             'last_name':last_name,
             'last_token':ticket,
