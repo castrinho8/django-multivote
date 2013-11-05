@@ -69,42 +69,20 @@ var choices = {
 	"": ""
 }
 
-var user_votes = new Array(10);
-var user_votes_len = 0
 
-{% if user_votes %}
-	$(function() {
-		{% for vote in user_votes %}
-		user_votes[{{ vote.number }}] = {{ vote.choice.id }};{% endfor %}
-	})
-{% endif %}
-
-
-function draw_choice(id, name, vote) {
-	var obj;
-	if(!vote) {
-		for(var i = 0; i < user_votes.length; i++) {
-			if(user_votes[i] == id) {
-				vote = i;
-				break;
-			}
-		}
-	}
-	if(vote > 0 && user_votes_len < 10) {
-		obj = $('#sortable')
-		user_votes[vote] = id
-	} else {
-		obj = $('#sortable_notform')
-		// console.log("Vote for ", name, " is ", vote)
-	}
+function draw_choice(id, name) {
+	/*
+	 * Draws a choice in the not-punctuable field
+	 */
+	obj = $('#sortable_notform')
 
 	var li = document.createElement('li')
 	var label = document.createElement('label')
 	var inpt = document.createElement('input')
 	inpt.type = "text"
 	$(inpt).attr('placeholder', '1..10')
-	$(inpt).val(vote || 0)
-	$(inpt).attr('data-value', vote || 0)
+	$(inpt).val(0)
+	$(inpt).attr('data-value', 0)
 	inpt.id = "choice_" + id
 	inpt.name ="choice_" + id
 	inpt.className = "input-mini"
@@ -117,11 +95,21 @@ function draw_choice(id, name, vote) {
 	obj.append(li)
 
 	attach_on_change(id)
+}
 
-	if(user_votes < 10) {
-		user_votes_len++;
-		sort_list(obj)
-	}
+function swapdiv_choice(cur_obj, onlyup) {
+	var cur_obj = $(cur_obj).parent().parent()
+	var dest_obj = null
+	var containers = [ $('#sortable'), $('#sortable_notform') ]
+	if(onlyup) {
+		dest_obj = containers[0]
+	} else
+		for (var x = 0; x < containers.length; x++)
+			if(cur_obj.parent() != containers[x]) {
+				dest_obj = containers[x]
+				break
+			}
+	cur_obj.detach().appendTo(dest_obj)
 }
 
 function drawswap_choice(id, newname) {
@@ -140,6 +128,24 @@ $(function() {
 		if(i)
 			draw_choice(i, choices[i])
 	}
+
+{% if user_votes %}
+	var user_votes = Array(11);
+		{% for vote in user_votes %}
+	user_votes[{{ vote.number }}] = {{ vote.choice.id }};{% endfor %}
+
+	for(var i = 10; i >= 0; i--) {
+		if(user_votes[i]) {
+			var obj = document.getElementById('choice_' + user_votes[i]);
+			obj.value = i;
+			swapdiv_choice(obj, true)
+		}
+	}
+
+{% endif %}
+
+
+	// sort_list($('#sortable'));
 })
 
 
@@ -161,6 +167,9 @@ function sort_list(list) {
 
 function sort_dom_list(evt) {
 	var mylist = $('#sortable')
+
+	console.log(evt)
+	swapdiv_choice(evt.target, true)
 	var lis = mylist.children('li').get()
 
 	lis.sort(function(a, b) {
@@ -245,7 +254,7 @@ function visual_warn(message)
 
 	function attach_on_change(choice_id) {
 		$('#choice_' + choice_id).change(sort_dom_list)
-		sort_list($('#sortable'))
+		// sort_list($('#sortable'))
 	}
 
 	function add_ajax_error(text) {
