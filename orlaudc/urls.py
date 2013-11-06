@@ -27,11 +27,11 @@ urlpatterns = patterns('',
     url(r'^polls/', include('polls.urls', namespace="polls")),
     url(r'^cas/', include('cas_client.urls')),
 
-    url(r'^accounts/login',
+    url(r'^accounts/login$',
     		TemplateView.as_view(template_name="accounts_login.html"),
     		name='accounts_login'),
 
-    url(r'^accounts/local_login', login, name="login"),
+    url(r'^accounts/local_login$', login, name="login"),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
