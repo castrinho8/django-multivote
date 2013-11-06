@@ -6,9 +6,15 @@
 	<ul>
 	{% for poll in latest_poll_list %}
 		<li>
+			{% if not polls.is_active %}
 			<a href="{% url "polls:detail" poll.id %}">
 				{{ poll.question }}
 			</a>
+			{% else %}
+			<a href="#" class="muted">
+				{{ poll.question }}
+			</a> (Votacións desactivadas)
+			{% endif %}
 
 			{% if perms.polls.poll_results %}
 			--
