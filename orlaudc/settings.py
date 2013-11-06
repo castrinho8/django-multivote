@@ -145,6 +145,7 @@ INSTALLED_APPS = (
     'cas_client',
     'polls',
     'orlaudc',
+    'south',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
