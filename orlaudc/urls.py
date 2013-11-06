@@ -27,7 +27,7 @@ urlpatterns = patterns('',
     url(r'^polls/', include('polls.urls', namespace="polls")),
     url(r'^cas/', include('cas_client.urls')),
 
-    url(r'^accounts/login$',
+    url(r'^accounts/login/$',
     		TemplateView.as_view(template_name="accounts_login.html"),
     		name='accounts_login'),
 
