@@ -76,13 +76,6 @@ Teranse en conta as 10 primeiras eleccións. Quedan <span class="remaining_votes
 
 <script type="text/javascript">
 
-var choices = {
-	{% for choice in poll.choice_set.all %}
-	{{ choice.id }} : "{{ choice.choice_text|force_escape|escapejs }}",
-	{% endfor %}
-	"": ""
-}
-
 
 function draw_choice(id, name) {
 	/*
@@ -138,10 +131,9 @@ function drawswap_choice(id, newname) {
 }
 
 $(function() {
-	for(var i in choices) {
-		if(i)
-			draw_choice(i, choices[i])
-	}
+	{% for choice in poll.choice_set.all %}
+	draw_choice({{ choice.id }}, "{{ choice.choice_text|force_escape|escapejs }}")
+	{% endfor %}
 
 {% if user_votes %}
 	var user_votes = Array(11);

@@ -24,12 +24,19 @@ class Poll(models.Model):
             ('bulk', 'Can update choices in bulk'),
         )
 
+class ChoiceManager(models.Manager):
+    def all(self, *args, **kwargs):
+        return super(ChoiceManager, self).all(*args, **kwargs).order_by('choice_text')
+
+
 class Choice(models.Model):
     poll = models.ForeignKey(Poll)
     suggested_by = models.ForeignKey(get_user_model())
 
     choice_text = models.CharField(max_length=200, unique=True)
     post_date = models.DateTimeField('date posted', default=timezone.now)
+
+    objects = ChoiceManager()
 
     def __unicode__(self):
         return self.choice_text
