@@ -6,7 +6,7 @@
 	<ul>
 	{% for poll in latest_poll_list %}
 		<li>
-			{% if not polls.is_active %}
+			{% if poll.is_active %}
 			<a href="{% url "polls:detail" poll.id %}">
 				{{ poll.question }}
 			</a>
