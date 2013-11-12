@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import TemplateView
 
 from polls import views
@@ -15,7 +16,7 @@ urlpatterns = patterns('',
     url(r'^(?P<poll_id>\d+)/add_choice$', views.add_choice, name='add_choice'),
 
 
-    url(r'^(?P<poll_id>\d+)/bulk$', TemplateView.as_view(template_name="polls/bulk_form.html"), name='bulk'),
+    url(r'^(?P<poll_id>\d+)/bulk$', permission_required("polls.bulk")(TemplateView.as_view(template_name="polls/bulk_form.html")), name='bulk'),
     url(r'^(?P<poll_id>\d+)/bulk/upload$', views.bulk_upload, name='bulk_upload'),
 
 )

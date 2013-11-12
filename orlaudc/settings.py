@@ -2,10 +2,12 @@
 import os
 
 DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
+    ('Santiago Saavedra', 'santiagosaavedra@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -145,6 +147,7 @@ INSTALLED_APPS = (
     'cas_client',
     'polls',
     'orlaudc',
+    'south',
 )
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'

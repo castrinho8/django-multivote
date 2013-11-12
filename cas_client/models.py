@@ -141,17 +141,13 @@ class CasBackend(object):
         first_name = data['first_name']
         last_name = data['last_name']
 
-        try:
-            user = CasUser.objects.get(login=login)
-            user.last_token = ticket
+        user, created = CasUser.objects.get_or_create(login=login, defaults={
+            'first_name':first_name,
+            'last_name':last_name,
+            'last_token':ticket,
+            'rawdata':raw_data})
 
-        except User.DoesNotExist:
-            user = CasUser(
-                    login=login,
-                    first_name=first_name,
-                    last_name=last_name,
-                    last_token=ticket,
-                    rawdata=raw_data)
+        user.last_token = ticket
         user.save()
 
         # Try and append user to each role
