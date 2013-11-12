@@ -3,6 +3,10 @@
 {% block content %}
 <h1>{{ poll.question }}</h1>
 
+<p>
+	Esta es la lista de resultados <strong>ordenada por número de votos</strong>.
+</p>
+
 <ol>
 {% for vote in poll.get_votes.all %}
     <li>
