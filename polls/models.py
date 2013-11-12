@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import Count
 from django.utils import timezone
 
 
@@ -22,6 +23,7 @@ class Poll(models.Model):
             ('poll_results', 'Can view the results of a poll'),
             ('poll_details', 'Can view all the details of a poll'),
             ('bulk', 'Can update choices in bulk'),
+            ('full_results', 'Can view the points of each individual choice')
         )
 
 class ChoiceManager(models.Manager):
@@ -49,11 +51,17 @@ class VoteManager(models.Manager):
         qs = self.filter(choice__in=choices)
         # qs = qs.order_by('number__sum')
         # qs = qs.extra(select={ 'nsum' : 'SUM(number)' }, order_by='-nsum')
-        qs = qs.select_related('choice').values('choice__choice_text').annotate(models.Sum('number')).order_by('-number__sum')
+        qs = qs.select_related('choice').values('choice__choice_text').annotate(models.Sum('number'), models.Count('number')).order_by('-number__count', '-number__sum')
 
         print qs
         print "hola!"
         return qs
+
+    def get_users(self):
+        x = self.values("user").annotate(Count("id")).order_by()
+
+        print x
+        return x
 
 
 

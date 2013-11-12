@@ -16,6 +16,10 @@
 			</a> (Votacións desactivadas)
 			{% endif %}
 
+			{% if perms.polls.vote_count %}
+			Usuarios que votaron: {{ poll.get_votes.get_users }}
+			{% endif %}
+
 			{% if perms.polls.poll_results %}
 			--
 			<a href="{% url "polls:results" poll.id %}">
