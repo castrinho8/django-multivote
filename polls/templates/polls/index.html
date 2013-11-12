@@ -6,7 +6,7 @@
 	<ul>
 	{% for poll in latest_poll_list %}
 		<li>
-			{% if not polls.is_active %}
+			{% if poll.is_active %}
 			<a href="{% url "polls:detail" poll.id %}">
 				{{ poll.question }}
 			</a>
@@ -14,6 +14,10 @@
 			<a href="#" class="muted">
 				{{ poll.question }}
 			</a> (Votacións desactivadas)
+			{% endif %}
+
+			{% if perms.polls.vote_count %}
+			Usuarios que votaron: {{ poll.get_votes.get_users }}
 			{% endif %}
 
 			{% if perms.polls.poll_results %}

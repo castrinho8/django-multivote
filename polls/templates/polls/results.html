@@ -3,12 +3,17 @@
 {% block content %}
 <h1>{{ poll.question }}</h1>
 
-<ul>
+<ol>
 {% for vote in poll.get_votes.all %}
     <li>
-    	<span style="min-width: 20em; display:inline-block">{{ vote.choice__choice_text }}:</span> <strong>{{ vote.number__sum }} puntos</strong></li>
+    <span style="min-width: 20em; display:inline-block">{{ vote.choice__choice_text }}</span>
+
+        {% if perms.polls.full_results %}
+        <strong>{{vote.number__count}}</strong> votos, total de <strong>{{ vote.number__sum }}</strong> puntos</li>
+
+        {% endif %}
 {% endfor %}
-</ul>
+</ol>
 
 <a href="{% url 'polls:detail' poll.id %}">Vote again?</a>
 {% endblock %}

@@ -100,7 +100,9 @@ class CasUser(AbstractBaseUser):
         if self.is_staff:
             return True
 
-        if perm in ['polls.poll_results', 'polls.bulk']:
+        if perm in [ #'polls.poll_results',
+            'polls.bulk',
+            'polls.full_results']:
             return False
         return True
 
