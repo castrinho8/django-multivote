@@ -146,20 +146,6 @@ $(function() {
 			swapdiv_choice(obj, true)
 		}
 	}
-
-{% if user_votes %}
-	var user_votes = Array(11);
-		{% for vote in user_votes %}
-	user_votes[{{ vote.number }}] = {{ vote.choice.id }};{% endfor %}
-
-	for(var i = 10; i >= 0; i--) {
-		if(user_votes[i]) {
-			var obj = document.getElementById('choice_' + user_votes[i]);
-			obj.value = i;
-			swapdiv_choice(obj, true)
-		}
-	}
-
 {% endif %}
 
 
