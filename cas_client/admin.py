@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
-from cas_client.models import CasUser
+from cas_client.models import CasUser, CasRole
 
 
 class UserCreationForm(forms.ModelForm):
@@ -81,6 +81,7 @@ class CasUserAdmin(UserAdmin):
 
 # Now register the new UserAdmin...
 admin.site.register(CasUser, CasUserAdmin)
+admin.site.register(CasRole)
 # ... and, since we're not using Django's builtin permissions,
 # unregister the Group model from admin.
 admin.site.unregister(Group)

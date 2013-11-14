@@ -115,7 +115,7 @@ class CasRole(models.Model):
     users = models.ManyToManyField(CasUser)
 
     def __unicode__(self):
-        return name
+        return self.name
 
     class Meta:
         permissions = (
