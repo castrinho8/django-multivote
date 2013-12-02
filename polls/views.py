@@ -35,15 +35,19 @@ class DetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
-        # print self.__dict__
         context['user_votes'] = Vote.objects.filter(user_id=self.request.user.id)
 
-        print list(context['user_votes'])
         return context
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated():
             return HttpResponseRedirect(reverse('accounts_login'))
+
+        poll = self.model.objects.get(**kwargs)
+        # If poll can't be voted anymore, return an error
+        if not poll.is_active:
+            messages.warning(request, u"Xa non se pode votar nesta encuesta.")
+            return HttpResponseRedirect(reverse('polls:index'))
         return super(DetailView, self).get(request, *args, **kwargs)
 
 
@@ -101,6 +105,11 @@ def validate_vote(request_fields, allowed_range, request=None):
 @login_required
 def vote(request, poll_id):
     p = get_object_or_404(Poll, pk=poll_id)
+
+    # If poll can't be voted anymore, return an error
+    if not p.is_active:
+        messages.warning(request, u"Xa non se pode votar nesta encuesta.")
+        return HttpResponseRedirect(reverse('polls:detail', args=(poll_id,)))
 
     # First of all, delete all votes for this user
     Vote.objects.filter(user=request.user).delete()

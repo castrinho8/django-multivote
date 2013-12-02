@@ -135,6 +135,7 @@ $(function() {
 	{% endfor %}
 
 {% if user_votes %}
+try {
 	var user_votes = Array(11);
 		{% for vote in user_votes %}
 	user_votes[{{ vote.number }}] = {{ vote.choice.id }};{% endfor %}
@@ -145,7 +146,7 @@ $(function() {
 			obj.value = i;
 			swapdiv_choice(obj, true)
 		}
-	}
+	}} catch(e) {}
 {% endif %}
 
 

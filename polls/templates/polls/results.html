@@ -13,11 +13,19 @@
     <span style="min-width: 20em; display:inline-block">{{ vote.choice__choice_text }}</span>
 
         {% if perms.polls.full_results %}
-        <strong>{{vote.number__count}}</strong> votos, total de <strong>{{ vote.number__sum }}</strong> puntos</li>
+
+        <strong>{{vote.number__count}}</strong> votos, total de <strong>{{ vote.number__sum }}</strong> puntos
+
+        {% elif not poll.is_active and perms.polls.full_results_finished %}
+        <strong>{{vote.number__count}}</strong> votos, total de <strong>{{ vote.number__sum }}</strong> puntos
 
         {% endif %}
+    </li>
 {% endfor %}
 </ol>
 
-<a href="{% url 'polls:detail' poll.id %}">Vote again?</a>
+{% if poll.is_active %}
+<a href="{% url 'polls:detail' poll.id %}">Podes votar de novo!</a>
+{% endif %}
+
 {% endblock %}

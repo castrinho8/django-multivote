@@ -2,6 +2,19 @@
 {% block title %}Orla UDC: Lista de Votacións{% endblock %}
 {% block content %}
 
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<div class="messages">
+{% for message in messages %}
+<div{% if message.tags %} class="alert alert-{{ message.tags }}" {% endif %}>
+<button type="button" class="close" data-dismiss="alert">&times;</button>
+{{ message }}</li>
+</div>
+{% endfor %}
+</div>
+
+
 {% if latest_poll_list %}
 	<ul>
 	{% for poll in latest_poll_list %}
@@ -17,7 +30,7 @@
 			{% endif %}
 
 			{% if perms.polls.vote_count %}
-			Usuarios que votaron: {{ poll.get_votes.get_users }}
+			Usuarios que votaron: {{ poll.get_voted_users }}
 			{% endif %}
 
 			{% if perms.polls.poll_results %}

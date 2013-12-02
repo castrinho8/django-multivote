@@ -15,6 +15,10 @@ class Poll(models.Model):
     def get_votes(self):
         return Vote.objects.all_sorted(self)
 
+    def get_voted_users(self):
+        print "Using get_voted_users"
+        return Vote.objects.get_users()
+
     class Meta:
         permissions = (
             ('poll_view', 'Can view polls'),
@@ -23,7 +27,8 @@ class Poll(models.Model):
             ('poll_results', 'Can view the results of a poll'),
             ('poll_details', 'Can view all the details of a poll'),
             ('bulk', 'Can update choices in bulk'),
-            ('full_results', 'Can view the points of each individual choice')
+            ('full_results', 'Can view the points of each individual choice'),
+            ('full_results_finished', 'Can view the points of each vote when the poll is finished')
         )
 
 class ChoiceManager(models.Manager):
@@ -53,14 +58,14 @@ class VoteManager(models.Manager):
         # qs = qs.extra(select={ 'nsum' : 'SUM(number)' }, order_by='-nsum')
         qs = qs.select_related('choice').values('choice__choice_text').annotate(models.Sum('number'), models.Count('number')).order_by('-number__count', '-number__sum')
 
-        print qs
-        print "hola!"
         return qs
 
-    def get_users(self):
-        x = self.values("user").annotate(Count("id")).order_by()
+    def get_users(self, poll):
+        print "HELLO WORLD!"
+        choices = Choice.objects.filter(poll=poll)
+        x = self.filter(choice__in=choices).values("user").annotate(Count("id")).order_by()
 
-        print x
+        print "get_users", x
         return x
 
 

@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, User
 from django.db import models
@@ -100,6 +102,19 @@ class CasUser(AbstractBaseUser):
         if self.is_staff:
             return True
 
+
+        permissions_granted = []
+        for role in self.casrole_set.all():
+            grants = json.loads(role.grants_permissions)
+            permissions_granted.extend(grants)
+
+        for role in self.casrole_set.all():
+            revoke = json.loads(role.revoke_permissions)
+            for p in revoke:
+                permissions_granted.remove(p)
+
+        return perm in permissions_granted
+
         if perm in [ #'polls.poll_results',
             'polls.bulk',
             'polls.full_results']:
@@ -113,6 +128,8 @@ class CasUser(AbstractBaseUser):
 class CasRole(models.Model):
     name = models.CharField(max_length=100)
     users = models.ManyToManyField(CasUser)
+    grants_permissions = models.TextField(default=lambda:"[]")
+    revoke_permissions = models.TextField(default=lambda:"[]")
 
     def __unicode__(self):
         return self.name
@@ -122,8 +139,6 @@ class CasRole(models.Model):
             ('role_view', 'View roles associated to a user'),
         )
 
-
-from django.conf import settings
 
 class CasBackend(object):
 
