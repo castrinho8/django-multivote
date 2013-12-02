@@ -46,7 +46,7 @@ class DetailView(generic.DetailView):
         poll = self.model.objects.get(**kwargs)
         # If poll can't be voted anymore, return an error
         if not poll.is_active:
-            messages.warning(request, u"Xa non se pode votar nesta encuesta.")
+            messages.warning(request, u"Xa non se pode votar nesta enquisa.")
             return HttpResponseRedirect(reverse('polls:index'))
         return super(DetailView, self).get(request, *args, **kwargs)
 
